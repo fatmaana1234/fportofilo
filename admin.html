@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Fatma Rabea</title>
+
+    <!-- Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-login {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-panel {
+            display: none;
+            padding-top: 100px;
+            padding-bottom: 50px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .form-card {
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .upload-zone:hover {
+            border-color: var(--clr-primary) !important;
+            background: rgba(147, 51, 234, 0.05);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <nav class="navbar glass">
+        <div class="container nav-content">
+            <a href="index.html" class="logo">Fatma <span>Admin</span></a>
+            <div class="nav-controls">
+                <a href="index.html" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">Back to
+                    Site</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Login Section -->
+        <section id="loginSection" class="admin-login">
+            <div class="glass" style="padding: 3rem; max-width: 400px; width: 90%;">
+                <h2 class="text-center" style="margin-bottom: 2rem;">Admin Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <input type="password" id="adminPassword" placeholder="Enter Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-full">Access Dashboard</button>
+                    <p id="loginError" style="color: #ef4444; margin-top: 1rem; text-align: center; display: none;">
+                        Incorrect password.</p>
+                </form>
+            </div>
+        </section>
+
+        <!-- Admin Panel -->
+        <section id="adminPanel" class="admin-panel container">
+            <h1 class="section-heading">Workspace Dashboard</h1>
+
+            <div class="dashboard-grid">
+                <!-- Add Project -->
+                <div class="form-card glass">
+                    <h3>Add New Project</h3>
+                    <form id="addProjectForm" class="mt-4">
+                        <div class="form-group">
+                            <input type="text" id="projTitle" placeholder="Project Title" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="projDesc" rows="3" placeholder="Short Description" required></textarea>
+                        </div>
+                        <!-- Image Upload Area -->
+                        <div class="form-group">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">Project Image (صورة
+                                المشروع)</label>
+                            <input type="file" id="imageUpload" accept="image/*"
+                                style="width: 100%; padding: 0.6rem; border: 2px dashed var(--clr-border); border-radius: 10px; background: transparent; color: var(--clr-text-main); cursor: pointer;">
+                            <p id="uploadStatus"
+                                style="font-size: 0.85rem; margin-top: 0.4rem; color: var(--clr-secondary);"></p>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="text" id="projLink" placeholder="Project Link (رابط المعاينة إن وجد)">
+                        </div>
+                        <div class="form-group">
+                            <select id="projCategory" required>
+                                <option value="WordPress">WordPress Website (موقع ووردبريس)</option>
+                                <option value="Other">Other Project (أعمال أخرى - تصميم/فيديو)</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full">Save Project (حفظ المشروع الآن)</button>
+                    </form>
+                </div>
+
+                <!-- Manage Content -->
+                <div class="form-card glass">
+                    <h3>Data Management (إدارة البيانات)</h3>
+                    <p class="mt-4">Currently, projects and reviews are stored in Firebase Firestore.</p>
+                    <div class="mt-4" style="display: flex; flex-direction: column; gap: 1rem;">
+                        <button id="syncProjectsBtn" class="btn btn-primary">Sync All Required Projects (مزامنة كافة
+                            المشاريع المطلوبة)</button>
+                        <button id="viewProjectsBtn" class="btn btn-outline">Check Site (مشاهدة الموقع)</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZvvJOO9pZUODb4v9MMbYsxhk-64Ai7Vc",
+            authDomain: "fatma-portfolio.firebaseapp.com",
+            projectId: "fatma-portfolio",
+            storageBucket: "fatma-portfolio.firebasestorage.app",
+            messagingSenderId: "611447591534",
+            appId: "1:611447591534:web:b17ef5b85692885c964c7f",
+            measurementId: "G-57NCH1TCSQ"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const ADMIN_PASS = "fatmaana@#1";
+        const loginForm = document.getElementById('loginForm');
+        const adminPanel = document.getElementById('adminPanel');
+
+        // Base64 image storage - no extra Firebase setup needed
+        let imageBase64 = '';
+
+        document.getElementById('imageUpload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            const status = document.getElementById('uploadStatus');
+            if (!file) { imageBase64 = ''; status.textContent = ''; return; }
+
+            if (file.size > 2 * 1024 * 1024) {
+                alert('الصورة كبيرة جداً! اختار صورة أقل من 2MB.');
+                e.target.value = '';
+                imageBase64 = '';
+                status.textContent = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                imageBase64 = ev.target.result;
+                status.textContent = `✅ تم اختيار: ${file.name}`;
+                status.style.color = '#a855f7';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (document.getElementById('adminPassword').value === ADMIN_PASS) {
+                document.getElementById('loginSection').style.display = 'none';
+                adminPanel.style.display = 'block';
+            } else {
+                alert('Wrong Password!');
+            }
+        });
+
+        document.getElementById('addProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = '⏳ جاري الحفظ...';
+
+            // Use base64 image or fallback placeholder
+            const finalImage = imageBase64 || 'https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=600&auto=format&fit=crop';
+
+            try {
+                await db.collection("projects").add({
+                    title: document.getElementById('projTitle').value,
+                    desc: document.getElementById('projDesc').value,
+                    image: finalImage,
+                    link: document.getElementById('projLink').value || '#',
+                    category: document.getElementById('projCategory').value,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                alert('✅ تم الحفظ! المشروع ظهر على الموقع دلوقتي.');
+                location.reload();
+            } catch (err) {
+                alert('❌ خطأ في الحفظ: ' + err.message + '\n\nتأكد من إعدادات Firestore Rules.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Project (حفظ المشروع الآن)';
+            }
+        });
+
+        document.getElementById('viewProjectsBtn').onclick = () => window.open('index.html', '_blank');
+
+        document.getElementById('syncProjectsBtn').onclick = async () => {
+            const btn = document.getElementById('syncProjectsBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Syncing...';
+
+            const defaultProjects = [
+                { title: "Premium WordPress Showcase", desc: "Custom WordPress development and creative engineering.", image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=800&auto=format&fit=crop", link: "https://fatmaana1234.github.io/wordpress/", category: "WordPress" },
+                { title: "NurseLearn: Aging Care", desc: "Specialized aging care and clinical education platform.", image: "https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?q=80&w=800&auto=format&fit=crop", link: "https://fatmaana1234.github.io/NurseLearn-Aging/", category: "WordPress" },
+                { title: "AI Customer Experience", desc: "Next-gen portal with automated customer intelligence.", image: "https://images.unsplash.com/photo-1531746790731-6c087fecd05a?q=80&w=800&auto=format&fit=crop", link: "https://fatmaana1234.github.io/customer-service/", category: "WordPress" },
+                { title: "LearnWithMe Academy", desc: "Learning platform for digital skills mastery.", image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=800&auto=format&fit=crop", link: "http://learnwithme.42web.io/", category: "WordPress" },
+                { title: "Wedding Invitation Design", desc: "Elegant design created on Canva.", image: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/8vnnlluoys6nh3b", category: "Other" },
+                { title: "Professional Resume Design", desc: "Modern resume design for career growth.", image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/menpsya3mf0mal1", category: "Other" },
+                { title: "Creative Video Design 1", desc: "Stunning video design project.", image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/9d7u8qje5r8ma8r", category: "Other" },
+                { title: "Creative Video Design 2", desc: "Advanced motion graphics design.", image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/mj6x81jm20ntnv6", category: "Other" },
+                { title: "Nursing Related Video", desc: "Healthcare education video content.", image: "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/pskodg7m15m2uec", category: "Other" },
+                { title: "Portfolio Visual Identity", desc: "Visual updates and identity design.", image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop", link: "https://canva.link/5h3jhvtxvctswje", category: "Other" },
+                { title: "Elderly Care Support Video", desc: "Compassionate video about elderly care.", image: "https://images.unsplash.com/photo-1581578731522-aa796ca87648?q=80&w=800&auto=format&fit=crop", link: "https://drive.google.com/file/d/1g2WhHfUcBeei6LkjJ-AFbUozBEsHmPVB/view?usp=drive_link", category: "Other" },
+                { title: "Child Care & Upbringing", desc: "Educational video content on children.", image: "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=800&auto=format&fit=crop", link: "https://drive.google.com/file/d/1UFD5dZMRnny1Gwm17E3oMOjOKiKQ8EGU/view?usp=sharing", category: "Other" }
+            ];
+
+            try {
+                // Delete existing ones to clean up
+                const snapshot = await db.collection("projects").get();
+                const b = db.batch();
+                snapshot.docs.forEach(doc => b.delete(doc.ref));
+                await b.commit();
+
+                // Add new ones
+                for (const p of defaultProjects) {
+                    await db.collection("projects").add({ ...p, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+                }
+                alert('✅ Database Synced Successfully! All 12 projects are now live.');
+                location.reload();
+            } catch (err) {
+                alert('Err: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = 'Sync All Required Projects';
+
+            }
+        };
+    </script>
+</body>
+
+</html>
