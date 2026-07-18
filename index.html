@@ -8,28 +8,41 @@
     <meta name="keywords" content="WordPress Developer, WordPress Designer, WooCommerce Expert, تصميم مواقع ووردبريس, Website Design, SEO Optimization, Freelance WordPress Developer">
     <meta property="og:title" content="Fatma Rabea | WordPress Developer">
     <meta property="og:description" content="Building Beautiful WordPress Websites That Attract, Engage, and Convert">
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
+    <!-- Preloader -->
+    <div id="preloader" class="preloader">
+        <div class="preloader-orb">
+            <div class="orb-ring"></div>
+            <div class="orb-core"></div>
+        </div>
+        <span class="preloader-text" data-i18n="preloader_text">Loading Experience…</span>
+    </div>
+
     <!-- Background Elements -->
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
+    <div class="grain-overlay"></div>
+
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
 
     <!-- Navigation -->
-    <nav class="navbar glass">
+    <nav class="navbar glass" id="navbar">
         <div class="container nav-content">
-            <a href="#" class="logo">Fatma <span>Rabea</span></a>
-            
-            <ul class="nav-links">
+            <a href="#hero" class="logo" data-i18n="brand">Fatma <span>Rabea</span></a>
+
+            <ul class="nav-links" id="navLinks">
                 <li><a href="#hero" data-i18n="nav_home">Home</a></li>
                 <li><a href="#about" data-i18n="nav_about">About</a></li>
                 <li><a href="#services" data-i18n="nav_services">Services</a></li>
@@ -41,18 +54,21 @@
             <div class="nav-controls">
                 <button id="langToggle" class="btn-icon" aria-label="Toggle Language" title="Toggle Language">
                     <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 5h7M20 5h-9M4 14h16M12 5v14M8 10h8M8 19h8"></path></svg>
-                    AR
+                    <span class="lang-label">AR</span>
                 </button>
-                <button id="themeToggle" class="btn-icon" aria-label="Toggle Theme" title="Toggle Theme">
+                <button id="themeToggle" class="btn-icon theme-toggle" aria-label="Toggle Theme" title="Toggle Theme">
                    <svg class="sun-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                    <svg class="moon-icon" viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
                 </button>
-                <div class="hamburger" id="hamburger">
+                <button class="hamburger" id="hamburger" aria-label="Open Menu" aria-expanded="false">
                     <span></span><span></span><span></span>
-                </div>
+                </button>
             </div>
         </div>
     </nav>
+
+    <!-- Mobile Overlay (closes menu when clicked) -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 
     <main>
         <!-- Hero Section -->
@@ -66,15 +82,33 @@
                         <a href="#projects" class="btn btn-primary" data-i18n="hero_cta1">View My Work</a>
                         <a href="#contact" class="btn btn-outline" data-i18n="hero_cta2">Start Your Project</a>
                     </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <span class="stat-num" data-count="30">0</span><span>+</span>
+                            <span class="stat-label" data-i18n="stat_projects">Projects</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="stat-num" data-count="5">0</span><span>+</span>
+                            <span class="stat-label" data-i18n="stat_years">Years</span>
+                        </div>
+                        <div class="hero-stat">
+                            <span class="stat-num" data-count="100">0</span><span>%</span>
+                            <span class="stat-label" data-i18n="stat_satisfaction">Satisfaction</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-visual fade-in">
                     <div class="image-wrapper glass">
+                        <div class="image-glow"></div>
                         <img src="assets/img/avatar.png" alt="Fatma Rabea - WordPress Developer" />
-                        <div class="floating-badge badge-1">WP Expert ✦</div>
-                        <div class="floating-badge badge-2">SEO Optimized ⚡</div>
+                        <div class="floating-badge badge-1" data-i18n="badge_1">WP Expert ✦</div>
+                        <div class="floating-badge badge-2" data-i18n="badge_2">SEO Optimized ⚡</div>
                     </div>
                 </div>
             </div>
+            <a href="#about" class="scroll-indicator" aria-label="Scroll down">
+                <span></span><span></span><span></span>
+            </a>
         </section>
 
         <!-- About Section -->
@@ -93,10 +127,32 @@
                 </div>
                 <div class="about-content fade-up">
                     <h2 class="section-heading" data-i18n="about_heading">About Me</h2>
-                    <p data-i18n="about_text">I am a passionate WordPress developer with a strong background in digital marketing and content creation. I specialize in building responsive, visually appealing, and performance-optimized websites. My goal is to create digital experiences that not only look beautiful but also deliver real business results.</p>
+                    <p data-i18n="about_text_full">I am a passionate WordPress developer with a strong background in digital marketing and content creation. I specialize in building responsive, visually appealing, and performance-optimized websites. My goal is to create digital experiences that not only look beautiful but also deliver real business results.</p>
                     <h3 data-i18n="career_obj_heading" class="sub-heading mt-4">Career Objective</h3>
                     <p data-i18n="career_obj_text">To design and develop high-quality WordPress websites that help businesses grow, attract customers, and succeed online.</p>
                 </div>
+            </div>
+        </section>
+
+        <!-- Projects Slider / Carousel Section -->
+        <section id="projects-slider" class="projects-slider">
+            <div class="container">
+                <div class="slider-header fade-up">
+                    <h2 class="section-heading text-center" data-i18n="slider_heading">Project Highlights</h2>
+                    <p class="text-center slider-subtitle" data-i18n="slider_subtitle">A quick glimpse of recent work — swipe through to explore.</p>
+                </div>
+            </div>
+            <div class="slider-wrapper fade-in" id="projectsSlider">
+                <div class="slider-track" id="sliderTrack">
+                    <!-- JS populates slides here -->
+                </div>
+                <button class="slider-btn slider-prev" id="sliderPrev" aria-label="Previous slide">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="slider-btn slider-next" id="sliderNext" aria-label="Next slide">
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+                <div class="slider-dots" id="sliderDots"></div>
             </div>
         </section>
 
@@ -108,21 +164,21 @@
                     <div class="skill-category glass">
                         <h3 data-i18n="skills_technical">Technical</h3>
                         <div class="skill-tags">
-                            <span>WordPress Development</span>
-                            <span>CSS & Responsive Design</span>
-                            <span>SEO Basics</span>
-                            <span>Digital Marketing</span>
-                            <span>Adobe Tools</span>
-                            <span>Video Editing</span>
+                            <span data-i18n="skill_1">WordPress Development</span>
+                            <span data-i18n="skill_2">CSS & Responsive Design</span>
+                            <span data-i18n="skill_3">SEO Basics</span>
+                            <span data-i18n="skill_4">Digital Marketing</span>
+                            <span data-i18n="skill_5">Adobe Tools</span>
+                            <span data-i18n="skill_6">Video Editing</span>
                         </div>
                     </div>
                     <div class="skill-category glass">
                         <h3 data-i18n="skills_professional">Professional</h3>
                         <div class="skill-tags">
-                            <span>Communication</span>
-                            <span>Problem Solving</span>
-                            <span>Creativity</span>
-                            <span>Time Management</span>
+                            <span data-i18n="skill_7">Communication</span>
+                            <span data-i18n="skill_8">Problem Solving</span>
+                            <span data-i18n="skill_9">Creativity</span>
+                            <span data-i18n="skill_10">Time Management</span>
                         </div>
                     </div>
                 </div>
@@ -167,15 +223,21 @@
         <section id="projects" class="projects">
             <div class="container fade-up">
                 <h2 class="section-heading text-center" data-i18n="projects_heading">Featured Projects</h2>
-                <p class="text-center" style="max-width: 700px; margin: -1rem auto 2rem; color: var(--clr-text-muted);" data-i18n="projects_subtitle">A showcase of my recent WordPress websites and creative design work.</p>
-                <div class="project-filters">
+                <p class="text-center projects-subtitle" data-i18n="projects_subtitle">A showcase of my recent WordPress websites and creative design work.</p>
+
+                <!-- Dynamic Filters (built by JS based on categories) -->
+                <div class="project-filters" id="projectFilters">
                     <button class="filter-btn active" data-filter="all" data-i18n="filter_all">All</button>
-                    <button class="filter-btn" data-filter="WordPress" data-i18n="filter_wp">WordPress Websites</button>
-                    <button class="filter-btn" data-filter="Other" data-i18n="filter_other">Other Projects</button>
                 </div>
+
                 <!-- Dynamic Projects Container -->
                 <div class="projects-grid" id="projectsContainer">
-                    <!-- Javascript populates projects here -->
+                    <!-- JS populates projects here -->
+                </div>
+
+                <!-- Show More Button -->
+                <div class="show-more-wrapper">
+                    <button class="btn btn-outline btn-show-more" id="showMoreBtn" data-i18n="show_more">Show More</button>
                 </div>
             </div>
         </section>
@@ -184,23 +246,23 @@
         <section id="testimonials" class="testimonials">
             <div class="container fade-up">
                 <h2 class="section-heading text-center" data-i18n="testimonials_heading">What Clients Say</h2>
-                
+
                 <div class="testimonials-grid" id="testimonialsContainer">
-                    <!-- Javascript populates reviews here -->
+                    <!-- JS populates reviews here -->
                 </div>
 
                 <div class="review-form-container glass">
                     <h3 data-i18n="review_leave_heading">Leave a Review</h3>
                     <form id="reviewForm" class="review-form">
                         <input type="text" id="reviewerName" required placeholder="Your Name" data-i18n-ph="review_ph_name">
-                        
+
                         <div class="star-rating" id="starRating">
                             <span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span>
                         </div>
                         <input type="hidden" id="ratingValue" required>
-                        
+
                         <textarea id="reviewText" required rows="3" placeholder="Write your feedback..." data-i18n-ph="review_ph_text"></textarea>
-                        
+
                         <button type="submit" class="btn btn-primary w-full" data-i18n="review_submit">Submit Review</button>
                     </form>
                 </div>
@@ -212,21 +274,21 @@
             <div class="container fade-up">
                 <div class="contact-wrapper glass">
                     <div class="contact-info">
-                        <h2 class="section-heading" data-i18n="contact_heading">Let’s Build Something Amazing Together</h2>
-                        <p data-i18n="contact_text">Have a project idea? I’d love to help you bring it to life.</p>
-                        
+                        <h2 class="section-heading" data-i18n="contact_heading">Let's Build Something Amazing Together</h2>
+                        <p data-i18n="contact_text">Have a project idea? I'd love to help you bring it to life.</p>
+
                         <div class="social-links mt-4">
                             <a href="mailto:fatmaana4444@gmail.com" class="social-link">
                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                                fatmaana4444@gmail.com
+                                <span data-i18n="contact_email_label">Email</span>
                             </a>
-                            <a href="https://www.linkedin.com/in/fatma-rabea-1529413b7" target="_blank" class="social-link">
+                            <a href="https://www.linkedin.com/in/fatma-rabea-1529413b7" target="_blank" rel="noopener" class="social-link">
                                 <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
-                                LinkedIn Profile
+                                <span data-i18n="contact_linkedin_label">LinkedIn Profile</span>
                             </a>
                         </div>
                     </div>
-                    
+
                     <form class="contact-form" id="contactForm">
                         <div class="form-group">
                             <input type="text" id="contactName" required placeholder="Name" data-i18n-ph="contact_ph_name">
@@ -246,31 +308,56 @@
 
     <footer>
         <div class="container text-center">
-            <p>&copy; <span id="year"></span> Fatma Rabea. All Rights Reserved.</p>
-            <p><small><a href="admin.html" class="admin-link">Admin Login</a></small></p>
+            <p data-i18n="footer_rights">&copy; <span id="year"></span> Fatma Rabea. All Rights Reserved.</p>
+            <p><small><a href="admin.html" class="admin-link" data-i18n="footer_admin">Admin Login</a></small></p>
         </div>
     </footer>
 
 
-    <!-- AI Chatbot Widget -->
+    <!-- Scroll-to-Top Button -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Scroll to top">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="19" x2="12" y2="5"></line>
+            <polyline points="5 12 12 5 19 12"></polyline>
+        </svg>
+    </button>
+
+    <!-- AI Chatbot Widget (redesigned) -->
     <div id="chatbot-widget" class="chatbot-widget">
         <button id="chatToggleBtn" class="chat-toggle-btn" aria-label="Open AI Chatbot">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-bot"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
+            <span class="ai-orb">
+                <span class="ai-orb-ring"></span>
+                <span class="ai-orb-core">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ai-icon">
+                        <path d="M12 2a3 3 0 0 1 3 3v1h1a3 3 0 0 1 3 3v1h1a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3h-1v1a3 3 0 0 1-6 0v-1H8a3 3 0 0 1-3-3v-1H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1V9a3 3 0 0 1 3-3h1V5a3 3 0 0 1 3-3z"></path>
+                        <circle cx="9" cy="11" r="1"></circle>
+                        <circle cx="15" cy="11" r="1"></circle>
+                    </svg>
+                </span>
+            </span>
+            <span class="chat-pulse"></span>
         </button>
 
-        <div id="chatInterface" class="chat-interface glass" style="display: none;">
+        <div id="chatInterface" class="chat-interface glass">
             <div class="chat-header">
-                <div>
-                    <h4>AI Assistant ✨</h4>
-                    <span class="chat-status" data-i18n="chat_status">Online</span>
+                <div class="chat-header-info">
+                    <div class="chat-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 2a3 3 0 0 1 3 3v1h1a3 3 0 0 1 3 3v1h1a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1v1a3 3 0 0 1-3 3h-1v1a3 3 0 0 1-6 0v-1H8a3 3 0 0 1-3-3v-1H4a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h1V9a3 3 0 0 1 3-3h1V5a3 3 0 0 1 3-3z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 data-i18n="chat_title">AI Assistant</h4>
+                        <span class="chat-status" data-i18n="chat_status">Online</span>
+                    </div>
                 </div>
-                <button id="chatCloseBtn" class="btn-icon">✖</button>
+                <button id="chatCloseBtn" class="chat-close" aria-label="Close chat">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
             </div>
-            
+
             <div id="chatBody" class="chat-body">
                 <!-- Chat messages populating here -->
             </div>
-            
+
             <!-- Quick Replies -->
             <div id="chatQuickReplies" class="chat-quick-replies">
                 <button class="chat-chip" data-msg="pricing" data-i18n="chat_q1">Pricing & Value</button>
@@ -280,12 +367,18 @@
 
             <div class="chat-footer">
                 <input type="text" id="chatInput" placeholder="Type a message..." data-i18n-ph="chat_ph">
-                <button id="chatSendBtn" class="btn-icon">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </div>
         </div>
     </div>
+
+    <!-- Sound Toggle (for users who want to mute) -->
+    <button id="soundToggle" class="sound-toggle" aria-label="Toggle sound" title="Toggle Sound">
+        <svg class="sound-on-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        <svg class="sound-off-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+    </button>
 
     <!-- Firebase SDKs (Compatibility Mode) -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
