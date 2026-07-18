@@ -1268,12 +1268,15 @@ function setupChatbot() {
     chatToggleBtn.addEventListener('click', toggleChat);
     chatCloseBtn?.addEventListener('click', () => { chatInterface.style.display = 'none'; playSound('click'); });
 
-    // Welcome after 3s (only if user hasn't opened)
-    setTimeout(() => {
-        if (chatInterface.style.display !== 'flex' && chatBody.children.length === 0) {
-            sendBotMessage(translations[currentLang].chat_welcome);
-        }
-    }, 3000);
+    // 🔑 Auto-open chat on first visit (per browser session)
+    if (!sessionStorage.getItem('chat_auto_opened')) {
+        setTimeout(() => {
+            if (chatInterface.style.display !== 'flex') {
+                toggleChat(); // opens chat AND sends welcome message
+            }
+            sessionStorage.setItem('chat_auto_opened', '1');
+        }, 2500);
+    }
 
     const handleSend = () => {
         const text = chatInput.value.trim();
@@ -1383,6 +1386,50 @@ function setupSmoothScroll() {
 }
 
 /* ==========================================================================
+   Site Settings (controlled from admin panel)
+   ========================================================================== */
+function applySiteSettings(settings) {
+    if (!settings) return;
+    const slider = document.getElementById('projects-slider');
+    const soundToggle = document.getElementById('soundToggle');
+    const chatbotWidget = document.getElementById('chatbot-widget');
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+    if (slider) slider.style.display = settings.show_slider === false ? 'none' : '';
+    if (soundToggle) soundToggle.style.display = settings.show_sound === false ? 'none' : '';
+    if (chatbotWidget) chatbotWidget.style.display = settings.show_chatbot === false ? 'none' : '';
+    if (scrollTopBtn) scrollTopBtn.style.display = settings.show_scroll_top === false ? 'none' : '';
+}
+
+function loadSiteSettings() {
+    const defaults = { show_slider: true, show_sound: true, show_chatbot: true, show_scroll_top: true };
+
+    // Try localStorage first (set by admin)
+    try {
+        const local = localStorage.getItem('site_settings');
+        if (local) {
+            applySiteSettings({ ...defaults, ...JSON.parse(local) });
+        } else {
+            applySiteSettings(defaults);
+        }
+    } catch (e) { applySiteSettings(defaults); }
+
+    // Then try Firebase (overrides localStorage if present)
+    if (db) {
+        try {
+            db.collection('settings').doc('site').onSnapshot(doc => {
+                if (doc.exists) {
+                    const s = doc.data();
+                    const merged = { ...defaults, ...s };
+                    applySiteSettings(merged);
+                    try { localStorage.setItem('site_settings', JSON.stringify(merged)); } catch(e) {}
+                }
+            }, () => { /* silent */ });
+        } catch (e) { /* silent */ }
+    }
+}
+
+/* ==========================================================================
    Init
    ========================================================================== */
 function hidePreloader() {
@@ -1410,6 +1457,7 @@ function init() {
     setupShowMore();
     setupSliderControls();
     setupSmoothScroll();
+    loadSiteSettings();
 
     // Animate counters once hero is visible
     setTimeout(() => {
