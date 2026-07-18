@@ -48,6 +48,74 @@
             border-color: var(--clr-primary) !important;
             background: rgba(147, 51, 234, 0.05);
         }
+
+        /* Site Settings Panel */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .setting-toggle {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            background: rgba(147, 51, 234, 0.05);
+            border: 1px solid var(--clr-border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 0;
+        }
+        .setting-toggle:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-color: var(--clr-primary);
+        }
+        .setting-toggle input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            accent-color: var(--clr-primary);
+            flex-shrink: 0;
+        }
+        .setting-toggle span {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--clr-text-main);
+            line-height: 1.4;
+        }
+        .setting-toggle .setting-desc {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--clr-text-muted);
+            display: block;
+            margin-top: 0.2rem;
+        }
+
+        .settings-saved-badge {
+            display: none;
+            padding: 0.6rem 1rem;
+            background: rgba(34, 197, 94, 0.15);
+            color: #22c55e;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .settings-saved-badge.visible { display: block; }
+
+        .dashboard-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        @media (max-width: 992px) {
+            .dashboard-grid-3 { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 
@@ -136,6 +204,55 @@
                         <button id="viewProjectsBtn" class="btn btn-outline">Check Site (مشاهدة الموقع)</button>
                     </div>
                 </div>
+            </div>
+
+            <!-- Site Settings Panel -->
+            <div class="form-card glass" style="margin-top: 2rem;">
+                <h3>Site Settings (إعدادات الموقع)</h3>
+                <p style="font-size: 0.9rem; color: var(--clr-text-muted); margin-top: 0.5rem;">
+                    Control the visibility of interactive elements on the live site. Changes apply instantly to all visitors.
+                    <br>
+                    تحكم في ظهور العناصر التفاعلية بالموقع. التغييرات تُطبق فورًا على كل الزوار.
+                </p>
+
+                <div class="settings-grid">
+                    <label class="setting-toggle">
+                        <input type="checkbox" id="settingSlider" checked>
+                        <span>
+                            Show Projects Slider
+                            <em class="setting-desc">إظهار سلايدر المشاريع في الصفحة الرئيسية</em>
+                        </span>
+                    </label>
+
+                    <label class="setting-toggle">
+                        <input type="checkbox" id="settingSound" checked>
+                        <span>
+                            Show Sound Button
+                            <em class="setting-desc">إظهار زر الصوت (تفعيل/كتم المؤثرات الصوتية)</em>
+                        </span>
+                    </label>
+
+                    <label class="setting-toggle">
+                        <input type="checkbox" id="settingChatbot" checked>
+                        <span>
+                            Show AI Chatbot
+                            <em class="setting-desc">إظهار مساعد الذكاء الاصطناعي (يفتح تلقائيًا للزوار الجدد)</em>
+                        </span>
+                    </label>
+
+                    <label class="setting-toggle">
+                        <input type="checkbox" id="settingScrollTop" checked>
+                        <span>
+                            Show Scroll-to-Top Button
+                            <em class="setting-desc">إظهار زر الصعود لأعلى الموقع</em>
+                        </span>
+                    </label>
+                </div>
+
+                <button id="saveSettingsBtn" class="btn btn-primary w-full" style="margin-top: 1.5rem;">
+                    Save Settings (حفظ الإعدادات)
+                </button>
+                <div id="settingsSavedBadge" class="settings-saved-badge">✅ Settings saved successfully! — تم الحفظ بنجاح</div>
             </div>
         </section>
     </main>
@@ -286,6 +403,80 @@
 
             }
         };
+
+        /* ============================================================
+           Site Settings — Save / Load (slider, sound, chatbot, scroll-top)
+           ============================================================ */
+        const SETTINGS_DEFAULTS = { show_slider: true, show_sound: true, show_chatbot: true, show_scroll_top: true };
+
+        function loadSettingsForm() {
+            const local = localStorage.getItem('site_settings');
+            let s = { ...SETTINGS_DEFAULTS };
+            if (local) {
+                try { s = { ...s, ...JSON.parse(local) }; } catch (e) {}
+            }
+            // If Firebase available, fetch latest (overrides local)
+            if (db) {
+                db.collection('settings').doc('site').get().then(doc => {
+                    if (doc.exists) {
+                        s = { ...s, ...doc.data() };
+                    }
+                    fillSettingsForm(s);
+                }).catch(() => fillSettingsForm(s));
+            } else {
+                fillSettingsForm(s);
+            }
+        }
+
+        function fillSettingsForm(s) {
+            document.getElementById('settingSlider').checked = s.show_slider !== false;
+            document.getElementById('settingSound').checked = s.show_sound !== false;
+            document.getElementById('settingChatbot').checked = s.show_chatbot !== false;
+            document.getElementById('settingScrollTop').checked = s.show_scroll_top !== false;
+        }
+
+        document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+            const btn = document.getElementById('saveSettingsBtn');
+            const badge = document.getElementById('settingsSavedBadge');
+            const settings = {
+                show_slider: document.getElementById('settingSlider').checked,
+                show_sound: document.getElementById('settingSound').checked,
+                show_chatbot: document.getElementById('settingChatbot').checked,
+                show_scroll_top: document.getElementById('settingScrollTop').checked
+            };
+
+            // Save to localStorage (works without Firebase)
+            try { localStorage.setItem('site_settings', JSON.stringify(settings)); } catch (e) {}
+
+            // Save to Firebase if available
+            if (db) {
+                btn.disabled = true;
+                btn.textContent = '⏳ Saving...';
+                try {
+                    await db.collection('settings').doc('site').set(settings, { merge: true });
+                    badge.classList.add('visible');
+                    btn.disabled = false;
+                    btn.textContent = 'Save Settings (حفظ الإعدادات)';
+                    setTimeout(() => badge.classList.remove('visible'), 3500);
+                } catch (err) {
+                    alert('⚠️ تم الحفظ محليًا فقط. Firebase خطأ: ' + err.message);
+                    btn.disabled = false;
+                    btn.textContent = 'Save Settings (حفظ الإعدادات)';
+                }
+            } else {
+                badge.classList.add('visible');
+                setTimeout(() => badge.classList.remove('visible'), 3500);
+                // Optional: open site in new tab so user can verify
+            }
+        });
+
+        // Load settings form when admin logs in
+        loginForm.addEventListener('submit', () => {
+            // After successful login (the existing handler does the show/hide), load settings
+            setTimeout(loadSettingsForm, 200);
+        });
+        // Also pre-load settings so they're ready when admin logs in
+        window.addEventListener('DOMContentLoaded', loadSettingsForm);
     </script>
 </body>
 
