@@ -546,13 +546,24 @@ section {
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid var(--clr-border);
+    justify-content: center;
+    flex-wrap: wrap;
 }
 .hero-stat {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
+    min-width: 90px;
 }
-.hero-stat > span:first-child {
+.stat-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.1rem;
+    line-height: 1;
+}
+.stat-value .stat-num {
     font-size: 2.2rem;
     font-weight: 800;
     background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
@@ -561,19 +572,23 @@ section {
     background-clip: text;
     line-height: 1;
 }
-.hero-stat > span:nth-child(2) {
-    font-size: 2.2rem;
+.stat-value .stat-suffix {
+    font-size: 1.6rem;
     font-weight: 800;
-    color: var(--clr-primary);
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     line-height: 1;
 }
 .stat-label {
-    font-size: 0.85rem !important;
-    color: var(--clr-text-muted) !important;
-    font-weight: 500 !important;
-    margin-top: 0.3rem;
-    background: none !important;
-    -webkit-text-fill-color: var(--clr-text-muted) !important;
+    font-size: 0.85rem;
+    color: var(--clr-text-muted);
+    font-weight: 500;
+    margin-top: 0.5rem;
+    background: none;
+    -webkit-text-fill-color: var(--clr-text-muted);
+    display: block;
 }
 
 .hero-visual {
@@ -626,30 +641,7 @@ section {
 [dir="rtl"] .badge-1 { right: auto; left: -20px; }
 [dir="rtl"] .badge-2 { left: auto; right: -20px; }
 
-.scroll-indicator {
-    position: absolute;
-    bottom: 2rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    width: 24px;
-    height: 40px;
-    align-items: center;
-    justify-content: center;
-    padding-top: 8px;
-}
-.scroll-indicator span {
-    display: block;
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--clr-primary);
-    animation: scrollDot 1.5s ease-in-out infinite;
-}
-.scroll-indicator span:nth-child(2) { animation-delay: 0.2s; }
-.scroll-indicator span:nth-child(3) { animation-delay: 0.4s; }
+.scroll-indicator { display: none; }
 @keyframes scrollDot {
     0%, 100% { opacity: 0.3; transform: translateY(0); }
     50% { opacity: 1; transform: translateY(4px); }
@@ -826,6 +818,7 @@ section {
     position: relative;
     overflow: hidden;
     padding: 1rem 0;
+    direction: ltr;
 }
 .slider-track {
     display: flex;
@@ -833,6 +826,7 @@ section {
     transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
     will-change: transform;
     padding: 0 5%;
+    direction: ltr;
 }
 .slider-card {
     flex: 0 0 calc(33.333% - 1rem);
@@ -844,6 +838,10 @@ section {
     cursor: pointer;
     box-shadow: var(--glass-shadow);
     border: 1px solid var(--clr-border);
+}
+/* In RTL mode, card content follows page direction */
+[dir="rtl"] .slider-card {
+    direction: rtl;
 }
 .slider-card img {
     width: 100%;
@@ -923,8 +921,7 @@ section {
 }
 .slider-prev { left: 1rem; }
 .slider-next { right: 1rem; }
-[dir="rtl"] .slider-prev { left: auto; right: 1rem; }
-[dir="rtl"] .slider-next { right: auto; left: 1rem; }
+/* No RTL swap — slider is always LTR, arrows stay in same positions */
 
 .slider-dots {
     display: flex;
@@ -1242,14 +1239,14 @@ footer {
 
 
 /* ==========================================================================
-   Scroll-to-Top Button
+   Scroll-to-Top Button — same size as AI button, stacked above it
    ========================================================================== */
 .scroll-top-btn {
     position: fixed;
-    bottom: 5.5rem;
+    bottom: calc(2rem + 62px + 1rem);
     right: 2rem;
-    width: 48px;
-    height: 48px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--clr-primary), var(--clr-secondary));
     color: #fff;
@@ -1265,27 +1262,30 @@ footer {
     transition: var(--transition);
     z-index: 1001;
 }
-[dir="rtl"] .scroll-top-btn { right: auto; left: 2rem; }
+[dir="rtl"] .scroll-top-btn {
+    right: auto;
+    left: 2rem;
+}
 .scroll-top-btn.visible {
     opacity: 1;
     visibility: visible;
     transform: translateY(0) scale(1);
 }
 .scroll-top-btn:hover {
-    transform: translateY(-3px) scale(1.1);
+    transform: translateY(-3px) scale(1.08);
     box-shadow: 0 10px 28px rgba(147, 51, 234, 0.55);
 }
 
 
 /* ==========================================================================
-   Sound Toggle
+   Sound Toggle — swaps to right side in RTL (opposite of AI/scroll-top)
    ========================================================================== */
 .sound-toggle {
     position: fixed;
     bottom: 2rem;
     left: 2rem;
-    width: 44px;
-    height: 44px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     background: var(--clr-surface);
     backdrop-filter: blur(16px);
@@ -1299,7 +1299,10 @@ footer {
     z-index: 1001;
     box-shadow: var(--glass-shadow);
 }
-[dir="rtl"] .sound-toggle { left: auto; right: auto; bottom: 2rem; left: 2rem; }
+[dir="rtl"] .sound-toggle {
+    left: auto;
+    right: 2rem;
+}
 .sound-toggle:hover {
     color: var(--clr-primary);
     transform: scale(1.1);
@@ -1698,22 +1701,30 @@ footer {
     .hero-stats {
         gap: 1.5rem;
     }
-    .hero-stat > span:first-child,
-    .hero-stat > span:nth-child(2) {
+    .stat-value .stat-num {
         font-size: 1.7rem;
+    }
+    .stat-value .stat-suffix {
+        font-size: 1.3rem;
     }
 
     .scroll-top-btn {
-        bottom: 5rem;
+        bottom: calc(1rem + 54px + 0.8rem);
         right: 1rem;
-        width: 42px;
-        height: 42px;
+        width: 54px;
+        height: 54px;
     }
     [dir="rtl"] .scroll-top-btn { right: auto; left: 1rem; }
 
     .sound-toggle {
         bottom: 1rem;
         left: 1rem;
+        width: 46px;
+        height: 46px;
+    }
+    [dir="rtl"] .sound-toggle {
+        left: auto;
+        right: 1rem;
     }
 
     .chatbot-widget {
